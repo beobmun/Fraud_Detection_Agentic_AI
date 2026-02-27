@@ -11,7 +11,7 @@ services:
       SIMULATOR_USER: ${SIMULATOR_USER}
       SIMULATOR_PASSWORD: ${SIMULATOR_PASSWORD}
     volumes:
-      - ./database/pgdata:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql/data
       - ./database/init.sh:/docker-entrypoint-initdb.d/init.sh
     ports:
       - "${DB_PORT}:5432"
@@ -20,3 +20,26 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - pgnetwork
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    ports:
+      - "5050:80"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - pgnetwork
+
+networks:
+  pgnetwork:
+    driver: bridge
+
+volumes:
+  pgdata:
