@@ -37,6 +37,25 @@ services:
     networks:
       - pgnetwork
 
+  simulator:
+    build: ./simulator
+    container_name: simulator
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      SIMULATOR_USER: ${SIMULATOR_USER}
+      SIMULATOR_PASSWORD: ${SIMULATOR_PASSWORD}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+    volumes:
+      - ./simulator:/app
+      - ./data/processed_data:/app/data # 시뮬레이터에서 사용할 데이터
+    networks:
+      - pgnetwork
+
+
 networks:
   pgnetwork:
     driver: bridge
