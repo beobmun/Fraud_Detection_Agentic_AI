@@ -1,8 +1,8 @@
 import sys
 import time
+import ast
 import psycopg2
 import pandas as pd
-import ast
 
 class RDBAdmin:
     def __init__(self, db_config):
@@ -205,4 +205,11 @@ class RDBAdmin:
         )
 
         self.conn.commit()
+
+    def close_connection(self):
+        if self.cur:
+            self.cur.close()
+        if self.conn:
+            self.conn.close()
+        print("Database connection closed.", flush=True)
 

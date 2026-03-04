@@ -57,12 +57,12 @@ class Generator:
         if current_card_date <= current_transaction_date:
             event = self.cards.iloc[self.current_card_idx]
             self.current_card_idx += 1
-            return "card_issue", event
+            return "card_issue", {k: (None if pd.isna(v) else v) for k, v in event.to_dict().items()}
         
         else:
             event = self.transactions.iloc[self.current_transaction_idx]
             self.current_transaction_idx += 1
-            return "transaction", event
+            return "transaction", {k: (None if pd.isna(v) else v) for k, v in event.to_dict().items()}
 
     def get_transactions(self):
         if self.transactions is None:
