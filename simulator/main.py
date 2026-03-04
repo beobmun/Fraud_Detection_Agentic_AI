@@ -31,9 +31,10 @@ if __name__ == "__main__":
                  .init_schema()
                  .insert_users_data(generator.get_users())
                  .insert_merchants_data(generator.get_merchants()))
-    
+    total_transactions = len(generator.get_transactions())
+
+    print("Streaming events...", flush=True, end="")
     while True:
-        print("Streaming events...", flush=True)
         event_type, event_data = generator.get_event()
         if event_type is None:
             print("All events processed. Exiting.")
@@ -45,6 +46,7 @@ if __name__ == "__main__":
             rdb_admin.insert_card_data(event_data)
         elif event_type == "transaction":
             rdb_admin.insert_transaction_data(event_data)
+            print(f"\rStreamed transaction event: {generator.current_transaction_idx} / {total_transactions}", flush=True, end="")
         else:
             print(f"Unknown event type: {event_type}", flush=True)
         
