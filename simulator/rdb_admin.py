@@ -76,15 +76,15 @@ class RDBAdmin:
                 CREATE TABLE cards (
                     uuid UUID PRIMARY KEY,
                     user_uuid UUID REFERENCES users(uuid),
-                    card_brand VARCHAR(50),
-                    card_type VARCHAR(50),
-                    card_number VARCHAR(50),
+                    brand VARCHAR(50),
+                    type VARCHAR(50),
+                    number VARCHAR(50),
                     expires DATE,
                     cvv VARCHAR(10),
                     has_chip BOOLEAN,
                     cards_issued INT,
                     credit_limit FLOAT,
-                    acct_open_date DATE,
+                    acct_open DATE,
                     year_pin_last_changed INT,
                     card_on_dark_web BOOLEAN
                 );
@@ -156,7 +156,7 @@ class RDBAdmin:
         # cards DB에 데이터 추가
         self.cur.execute(
             """
-                INSERT INTO cards (uuid, user_uuid, card_brand, card_type, card_number, expires, cvv, has_chip, cards_issued, credit_limit, acct_open_date, year_pin_last_changed, card_on_dark_web)
+                INSERT INTO cards (uuid, user_uuid, brand, type, number, expires, cvv, has_chip, cards_issued, credit_limit, acct_open, year_pin_last_changed, card_on_dark_web)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """, (
                 data['UUID'], data['User'], data['Card Brand'], data['Card Type'],
