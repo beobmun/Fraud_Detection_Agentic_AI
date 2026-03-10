@@ -66,7 +66,7 @@ class OntologyAdmin:
 
         nation_uri = self.GEO["Nation_USA"]
         self.g.add((nation_uri, RDF.type, self.GEO.Nation))
-        self.added_nations.add(nation_uri)
+        self.added_uris.add(nation_uri)
 
         for _, user in users.iterrows():
             user_dict = {k: (None if pd.isna(v) else v) for k, v in user.to_dict().items()}
@@ -77,17 +77,18 @@ class OntologyAdmin:
             city = user_dict.get('City')
             state = user_dict.get('State')
             
-            state_uri = self.GEO[f"State_{state.replace(' ', '_')}"]
-            city_uri = self.GEO[f"City_{city.replace(' ', '_')}_{state.replace(' ', '_')}"]
+            if state and city:
+                state_uri = self.GEO[f"State_{state.replace(' ', '_')}"]
+                city_uri = self.GEO[f"City_{city.replace(' ', '_')}_{state.replace(' ', '_')}"]
 
-            if state_uri not in self.added_uris:
-                self.g.add((state_uri, RDF.type, self.GEO.State))
-                self.g.add((state_uri, self.GEO.partOf, nation_uri))
-                self.added_uris.add(state_uri)
-            if city_uri not in self.added_uris:
-                self.g.add((city_uri, RDF.type, self.GEO.City))
-                self.g.add((city_uri, self.GEO.partOf, state_uri))
-                self.added_uris.add(city_uri)
+                if state_uri not in self.added_uris:
+                    self.g.add((state_uri, RDF.type, self.GEO.State))
+                    self.g.add((state_uri, self.GEO.partOf, nation_uri))
+                    self.added_uris.add(state_uri)
+                if city_uri not in self.added_uris:
+                    self.g.add((city_uri, RDF.type, self.GEO.City))
+                    self.g.add((city_uri, self.GEO.partOf, state_uri))
+                    self.added_uris.add(city_uri)
 
             self.g.add((user_uri, self.GEO.liveIn, city_uri))
 
@@ -119,40 +120,41 @@ class OntologyAdmin:
             state = merchant_dict.get('State')
             city = merchant_dict.get('City')
             
-            if state is None:
-                city_uri = self.GEO[f"City_{city.replace(' ', '_')}"]
-                if city_uri not in self.added_uris:
-                    self.g.add((city_uri, RDF.type, self.GEO.City))
-                    self.added_uris.add(city_uri)
-                self.g.add((merchant_uri, self.GEO.locatedIn, city_uri))
-            elif len(state) == 2:
-                nation = "USA"
-                nation_uri = self.GEO[f"Nation_{nation}"]
-                if nation_uri not in self.added_nations:
-                    self.g.add((nation_uri, RDF.type, self.GEO.Nation))
-                    self.added_nations.add(nation_uri)
-                state_uri = self.GEO[f"State_{state.replace(' ', '_')}"]
-                if state_uri not in self.added_uris:
-                    self.g.add((state_uri, RDF.type, self.GEO.State))
-                    self.g.add((state_uri, self.GEO.partOf, nation_uri))
-                    self.added_uris.add(state_uri)
-                city_uri = self.GEO[f"City_{city.replace(' ', '_')}_{state.replace(' ', '_')}"]
-                if city_uri not in self.added_uris:
-                    self.g.add((city_uri, RDF.type, self.GEO.City))
-                    self.g.add((city_uri, self.GEO.partOf, state_uri))
-                    self.added_uris.add(city_uri)
-                self.g.add((merchant_uri, self.GEO.locatedIn, city_uri))
-            else:
-                nation_uri = self.GEO[f"Nation_{state.replace(' ', '_')}"]
-                if nation_uri not in self.added_uris:
-                    self.g.add((nation_uri, RDF.type, self.GEO.Nation))
-                    self.added_uris.add(nation_uri)
-                city_uri = self.GEO[f"City_{city.replace(' ', '_')}_{state.replace(' ', '_')}"]
-                if city_uri not in self.added_uris:
-                    self.g.add((city_uri, RDF.type, self.GEO.City))
-                    self.g.add((city_uri, self.GEO.partOf, nation_uri))
-                    self.added_uris.add(city_uri)
-                self.g.add((merchant_uri, self.GEO.locatedIn, city_uri))
+            if city:
+                if state is None:
+                    city_uri = self.GEO[f"City_{city.replace(' ', '_')}"]
+                    if city_uri not in self.added_uris:
+                        self.g.add((city_uri, RDF.type, self.GEO.City))
+                        self.added_uris.add(city_uri)
+                    self.g.add((merchant_uri, self.GEO.locatedIn, city_uri))
+                elif len(state) == 2:
+                    nation = "USA"
+                    nation_uri = self.GEO[f"Nation_{nation}"]
+                    if nation_uri not in self.added_uris:
+                        self.g.add((nation_uri, RDF.type, self.GEO.Nation))
+                        self.added_uris.add(nation_uri)
+                    state_uri = self.GEO[f"State_{state.replace(' ', '_')}"]
+                    if state_uri not in self.added_uris:
+                        self.g.add((state_uri, RDF.type, self.GEO.State))
+                        self.g.add((state_uri, self.GEO.partOf, nation_uri))
+                        self.added_uris.add(state_uri)
+                    city_uri = self.GEO[f"City_{city.replace(' ', '_')}_{state.replace(' ', '_')}"]
+                    if city_uri not in self.added_uris:
+                        self.g.add((city_uri, RDF.type, self.GEO.City))
+                        self.g.add((city_uri, self.GEO.partOf, state_uri))
+                        self.added_uris.add(city_uri)
+                    self.g.add((merchant_uri, self.GEO.locatedIn, city_uri))
+                else:
+                    nation_uri = self.GEO[f"Nation_{state.replace(' ', '_')}"]
+                    if nation_uri not in self.added_uris:
+                        self.g.add((nation_uri, RDF.type, self.GEO.Nation))
+                        self.added_uris.add(nation_uri)
+                    city_uri = self.GEO[f"City_{city.replace(' ', '_')}_{state.replace(' ', '_')}"]
+                    if city_uri not in self.added_uris:
+                        self.g.add((city_uri, RDF.type, self.GEO.City))
+                        self.g.add((city_uri, self.GEO.partOf, nation_uri))
+                        self.added_uris.add(city_uri)
+                    self.g.add((merchant_uri, self.GEO.locatedIn, city_uri))
             
             if merchant_dict.get('MCC') is not None:
                 self.g.add((merchant_uri, self.FDA.hasMCC, Literal(int(merchant_dict['MCC']), datatype=XSD.integer)))
@@ -213,7 +215,7 @@ class OntologyAdmin:
             dt_str = pd.to_datetime(data['Datetime']).isoformat()
             self.g.add((transaction_uri, self.FDA.hasDatetime, Literal(dt_str, datatype=XSD.dateTime)))
         if data.get('Use Chip') is not None:
-            self.g.add((transaction_uri, self.FDA.hasUseChip, Literal(bool(data['Use Chip']), datatype=XSD.boolean)))
+            self.g.add((transaction_uri, self.FDA.hasUseChip, Literal(str(data['Use Chip']), datatype=XSD.string)))
         if data.get('Errors') and data['Errors'] != '':
             try:
                 errors_list = ast.literal_eval(str(data['Errors']))
