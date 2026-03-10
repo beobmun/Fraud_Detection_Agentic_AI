@@ -156,7 +156,7 @@ class RDBAdmin:
         # cards DB에 데이터 추가
         self.cur.execute(
             """
-                INSERT INTO cards (uuid, user_uuid, brand, type, number, expires, cvv, has_chip, cards_issued, credit_limit, acct_open, year_pin_last_changed, card_on_dark_web)
+                INSERT INTO cards (uuid, user_uuid, brand, type, number, expires, cvv, has_chip, cards_issued, credit_limit, acct_open_date, year_pin_last_changed, card_on_dark_web)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """, (
                 data['UUID'], data['User'], data['Card Brand'], data['Card Type'],
