@@ -84,7 +84,7 @@ class RDBAdmin:
                     has_chip BOOLEAN,
                     cards_issued INT,
                     credit_limit FLOAT,
-                    acct_open DATE,
+                    acct_open_date DATE,
                     year_pin_last_changed INT,
                     card_on_dark_web BOOLEAN
                 );

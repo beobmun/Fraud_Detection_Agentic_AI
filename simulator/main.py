@@ -6,6 +6,7 @@ import sys
 from dotenv import load_dotenv
 from simulator import Simulator
 from rdb_admin import RDBAdmin
+from ontology_admin import OntologyAdmin
 from generator import Generator
 
 load_dotenv()
@@ -31,6 +32,12 @@ if __name__ == "__main__":
                  .init_schema()
                  .insert_users_data(generator.get_users())
                  .insert_merchants_data(generator.get_merchants()))
+    
+    ontology_admin = (OntologyAdmin()
+                      .init_schema()
+                      .insert_users_data(generator.get_users())
+                      .insert_merchants_data(generator.get_merchants()))
+
     total_transactions = len(generator.get_transactions())
 
     print("Streaming events...", flush=True, end="")
@@ -44,8 +51,11 @@ if __name__ == "__main__":
         # 이벤트 타입에 따라 적절한 DB(PostgreSQL) 삽입 함수 호출
         if event_type == "card_issue":
             rdb_admin.insert_card_data(event_data)
+            ontology_admin.insert_card_data(event_data)
+
         elif event_type == "transaction":
             rdb_admin.insert_transaction_data(event_data)
+            ontology_admin.insert_transaction_data(event_data)
             print(f"\rStreamed transaction event: {generator.current_transaction_idx} / {total_transactions}", flush=True, end="")
         else:
             print(f"Unknown event type: {event_type}", flush=True)
@@ -53,3 +63,10 @@ if __name__ == "__main__":
         # Ontology_Admin을 통한 온톨로지 저장 (추후 구현 예정)
 
         # 다음 event 발생 신호 대기 
+        if generator.current_transaction_idx > 10000:
+            ontology_admin.close_connection("ontology.ttl")
+            break
+
+    print("Waiting for next events...", flush=True)
+    while True:
+        time.sleep(1)

@@ -127,7 +127,7 @@ class OntologyAdmin:
                         self.g.add((city_uri, RDF.type, self.GEO.City))
                         self.added_uris.add(city_uri)
                     self.g.add((merchant_uri, self.GEO.locatedIn, city_uri))
-                elif len(state) == 2:
+                elif len(str(state)) == 2:
                     nation = "USA"
                     nation_uri = self.GEO[f"Nation_{nation}"]
                     if nation_uri not in self.added_uris:
